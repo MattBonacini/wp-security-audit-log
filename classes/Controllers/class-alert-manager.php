@@ -25,6 +25,7 @@ use WSAL\Entities\Occurrences_Entity;
 use WSAL\Helpers\User_Sessions_Helper;
 use WSAL\WP_Sensors\Helpers\Yoast_SEO_Helper;
 use WSAL\WP_Sensors\Helpers\Woocommerce_Helper;
+use WSAL\WP_Sensors\Alerts\WP_2FA_Custom_Alerts;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -638,7 +639,11 @@ if ( ! class_exists( '\WSAL\Controllers\Alert_Manager' ) ) {
 			// NOTE: return false on a true condition to compensate.
 			if ( ! $cond || (bool) call_user_func( $cond ) ) {
 				if ( self::is_enabled( $type ) ) {
-					if ( isset( self::get_alerts()[ $type ] ) ) {
+
+					// Skip loading all default alerts if this $type is a custom alert.
+					$skip_default_alerts = self::is_custom_alert( $type ) ? true : false;
+
+					if ( isset( self::get_alerts( $skip_default_alerts )[ $type ] ) ) {
 						// Ok, convert alert to a log entry.
 						self::$triggered_types[] = $type;
 						self::log( $type, $data );
@@ -932,16 +937,39 @@ if ( ! class_exists( '\WSAL\Controllers\Alert_Manager' ) ) {
 		}
 
 		/**
+		 * Determine if this is a custom alert, based on its $type
+		 * 
+		 * @param int $type - Alert type.
+		 * @return bool True if it is a custom alert, false otherwise. 
+		 */
+		private static function is_custom_alert( $type ): bool {
+
+			$is_custom = false;
+
+			$wp_2fa_alerts = WP_2FA_Custom_Alerts::get_alerts_array();
+			$wp_2fa_alerts_keys = array_keys( $wp_2fa_alerts );
+
+			if ( in_array( $type, $wp_2fa_alerts_keys, true ) ) {
+				$is_custom = true;
+			}
+
+			return $is_custom;
+		}
+
+		/**
 		 * Returns all the alerts. If the array with the alerts is not initialized - it first tries to initialize it.
+		 * 
+		 * @param bool $skip_default_alerts - Skip loading all the default alerts. Defaults to false.
 		 *
 		 * @since 4.5.0
 		 */
-		public static function get_alerts(): array {
+		public static function get_alerts( $skip_default_alerts = false ): array {
 			if ( empty( self::$alerts ) ) {
 				if ( ! \function_exists( 'set_wsal_alerts' ) ) {
 					\WpSecurityAuditLog::load_defaults();
 				}
-				set_wsal_alerts();
+				
+				set_wsal_alerts( $skip_default_alerts );
 			}
 
 			if ( ! array( self::$alerts ) ) {

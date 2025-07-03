@@ -71,6 +71,9 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 		 */
 		public static function settings_trigger( $option, $old_value, $new_value ) {
 			if ( 'wp_2fa_policy' === $option ) {
+
+				$batch_triggers = array();
+
 				// Overall policy.
 				if ( $new_value['enforcement-policy'] !== $old_value['enforcement-policy'] ) {
 					if ( 'do-not-enforce' === $new_value['enforcement-policy'] ) {
@@ -84,47 +87,47 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 							'new_policy' => ( 'all-users' === $new_value['enforcement-policy'] ) ? esc_html__( 'Enforce on all users', 'wp-security-audit-log' ) : esc_html__( 'Only enforce on specific users & roles', 'wp-security-audit-log' ),
 						);
 					}
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( $new_value['enforced_roles'] !== $old_value['enforced_roles'] ) {
-					$alert_code = 7802;
-					$variables  = array(
+					$alert_code       = 7802;
+					$variables        = array(
 						'changed_list' => esc_html__( 'Enforced roles', 'wp-security-audit-log' ),
 						'old_list'     => ( ! empty( $old_value['enforced_roles'] ) ) ? implode( ', ', $old_value['enforced_roles'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 						'new_list'     => ( ! empty( $new_value['enforced_roles'] ) ) ? implode( ', ', $new_value['enforced_roles'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( $new_value['enforced_users'] !== $old_value['enforced_users'] ) {
-					$alert_code = 7802;
-					$variables  = array(
+					$alert_code       = 7802;
+					$variables        = array(
 						'changed_list' => esc_html__( 'Enforced users', 'wp-security-audit-log' ),
 						'old_list'     => ( ! empty( $old_value['enforced_users'] ) ) ? implode( ', ', $old_value['enforced_users'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 						'new_list'     => ( ! empty( $new_value['enforced_users'] ) ) ? implode( ', ', $new_value['enforced_users'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( $new_value['excluded_roles'] !== $old_value['excluded_roles'] ) {
-					$alert_code = 7803;
-					$variables  = array(
+					$alert_code       = 7803;
+					$variables        = array(
 						'changed_list' => esc_html__( 'Excluded roles', 'wp-security-audit-log' ),
 						'old_list'     => ( ! empty( $old_value['excluded_roles'] ) ) ? implode( ', ', $old_value['excluded_roles'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 						'new_list'     => ( ! empty( $new_value['excluded_roles'] ) ) ? implode( ', ', $new_value['excluded_roles'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( $new_value['excluded_users'] !== $old_value['excluded_users'] ) {
-					$alert_code = 7803;
-					$variables  = array(
+					$alert_code       = 7803;
+					$variables        = array(
 						'changed_list' => esc_html__( 'Excluded users', 'wp-security-audit-log' ),
 						'old_list'     => ( ! empty( $old_value['excluded_users'] ) ) ? implode( ', ', $old_value['excluded_users'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 						'new_list'     => ( ! empty( $new_value['excluded_users'] ) ) ? implode( ', ', $new_value['excluded_users'] ) : esc_html__( 'None provided', 'wp-security-audit-log' ),
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( \class_exists( '\WP2FA\Admin\Controllers\Settings' ) ) {
@@ -161,39 +164,43 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 						}
 
 						if ( ! empty( $policy_name ) && ( ! isset( $old_value[ $policy_name ] ) || $old_value[ $policy_name ] !== $new_value[ $policy_name ] ) ) {
-							$alert_code = 7804;
-							$variables  = array(
+							$alert_code       = 7804;
+							$variables        = array(
 								'method'    => $names[ $provider ],
 								'EventType' => ! empty( $new_value[ $policy_name ] ) ? 'enabled' : 'disabled',
 							);
-							Alert_Manager::trigger_event( $alert_code, $variables );
+							$batch_triggers[] = array( $alert_code, $variables );
 						}
 					}
 				}
 
 				if ( ( isset( $new_value['enable_trusted_devices'] ) && ! isset( $old_value['enable_trusted_devices'] ) ) || ( isset( $new_value['enable_trusted_devices'] ) && isset( $old_value['enable_trusted_devices'] ) && isset( $old_value['enable_trusted_devices'] ) && $old_value['enable_trusted_devices'] !== $new_value['enable_trusted_devices'] ) ) {
-					$alert_code = 7805;
-					$variables  = array(
+					$alert_code       = 7805;
+					$variables        = array(
 						'EventType' => ! empty( $new_value['enable_trusted_devices'] ) ? 'enabled' : 'disabled',
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( ( isset( $new_value['trusted-devices-period'] ) && ! isset( $old_value['trusted-devices-period'] ) ) || ( isset( $new_value['trusted-devices-period'] ) && isset( $old_value['trusted-devices-period'] ) && $old_value['trusted-devices-period'] !== $new_value['trusted-devices-period'] ) ) {
-					$alert_code = 7806;
-					$variables  = array(
+					$alert_code       = 7806;
+					$variables        = array(
 						'old_value' => $old_value['trusted-devices-period'] ?? '',
 						'new_value' => $new_value['trusted-devices-period'],
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
 				}
 
 				if ( isset( $new_value['password-reset-2fa-show'] ) && isset( $old_value['password-reset-2fa-show'] ) && $old_value['password-reset-2fa-show'] !== $new_value['password-reset-2fa-show'] ) {
-					$alert_code = 7807;
-					$variables  = array(
+					$alert_code       = 7807;
+					$variables        = array(
 						'EventType' => ! empty( $new_value['password-reset-2fa-show'] ) ? 'enabled' : 'disabled',
 					);
-					Alert_Manager::trigger_event( $alert_code, $variables );
+					$batch_triggers[] = array( $alert_code, $variables );
+				}
+
+				foreach ( $batch_triggers as [ $code, $vars ] ) {
+					Alert_Manager::trigger_event( $code, $vars );
 				}
 			}
 		}

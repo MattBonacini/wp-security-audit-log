@@ -128,7 +128,7 @@ function wsaldefaults_build_links( $link_aliases = array() ) {
 
 				case 'RevisionLink':
 					// if ( defined( 'WP_POST_REVISIONS' ) && ! WP_POST_REVISIONS ) {
-					// 	$result[ esc_html__( 'revisions are not enabled', 'wp-security-audit-log' ) ] = '';
+					// $result[ esc_html__( 'revisions are not enabled', 'wp-security-audit-log' ) ] = '';
 					// } else {
 						$result[ esc_html__( 'View the content changes', 'wp-security-audit-log' ) ] = '%RevisionLink%';
 					// }
@@ -160,11 +160,29 @@ function wsaldefaults_build_links( $link_aliases = array() ) {
 /**
  * Loads all the events for the core and extentions
  *
+ * @param bool $skip_default_alerts - Skip loading the default alerts. Defaults to false.
  * @return void
  *
  * @since 4.5.0
  */
-function set_wsal_alerts() {
+function set_wsal_alerts( $skip_default_alerts = false ) {
+
+		// Load Custom alerts first.
+		wsal_load_include_custom_files();
+
+		// Skip default alerts if requested.
+	if ( false === $skip_default_alerts ) {
+		// Load default alerts.
+		wsal_set_default_alerts();
+	}
+}
+
+/**
+ * Sets the default alerts
+ *
+ * @return void
+ */
+function wsal_set_default_alerts() {
 
 	$wsal_default_events = array(
 		esc_html__( 'Users Logins & Sessions Events', 'wp-security-audit-log' ) => array(
@@ -3503,7 +3521,4 @@ function set_wsal_alerts() {
 	// );
 	// Alert_Manager::register_group( $file_changes_tab );
 	// }
-
-	// Load Custom alerts.
-	wsal_load_include_custom_files();
 }
