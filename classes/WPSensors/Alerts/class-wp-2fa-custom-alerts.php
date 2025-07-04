@@ -132,6 +132,26 @@ if ( ! class_exists( '\WSAL\WP_Sensors\Alerts\WP_2FA_Custom_Alerts' ) ) {
 					'2fa',
 					'unblocked',
 				),
+				7813 => array(
+					7813,
+					WSAL_MEDIUM,
+					esc_html__( 'A WP 2FA User configured a 2FA backup method', 'wp-security-audit-log' ),
+					__( 'The user %user% has configured a 2FA backup method.', 'wp-security-audit-log' ),
+					array(),
+					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
+					'2fa',
+					'added',
+				),
+				7814 => array(
+					7814,
+					WSAL_LOW,
+					esc_html__( 'A WP 2FA User generated a new list of backup codes', 'wp-security-audit-log' ),
+					__( 'The user %user% has generated a new list of backup codes.', 'wp-security-audit-log' ),
+					array(),
+					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
+					'2fa',
+					'modified',
+				),
 			);
 		}
 

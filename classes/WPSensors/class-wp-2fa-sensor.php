@@ -242,6 +242,27 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 				);
 				Alert_Manager::trigger_event( $alert_code, $variables );
 			}
+
+			if ( 'wp_2fa_backup_codes' === $meta_key ) {
+
+				$hook = current_filter();
+				$user = get_userdata( $user_id );
+
+				$alert_code = 7813;
+				$variables  = array(
+					'user'         => $user->user_login,
+					'EditUserLink' => add_query_arg( 'user_id', $user_id, \network_admin_url( 'user-edit.php' ) ),
+				);
+
+				/**
+				 * If this is a user update event with 'wp_2fa_backup_codes', then use code 7814
+				 */
+				if ( 'updated_user_meta' === $hook ) {
+					$alert_code = 7814;
+				}
+
+				Alert_Manager::trigger_event( $alert_code, $variables );
+			}
 		}
 
 		/**
