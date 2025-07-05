@@ -250,8 +250,9 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 
 				$alert_code = 7813;
 				$variables  = array(
-					'user'         => $user->user_login,
-					'EditUserLink' => add_query_arg( 'user_id', $user_id, \network_admin_url( 'user-edit.php' ) ),
+					'user'          => $user->user_login,
+					'CurrentUserID' => $user->ID,
+					'EditUserLink'  => add_query_arg( 'user_id', $user_id, \network_admin_url( 'user-edit.php' ) ),
 				);
 
 				/**
@@ -259,6 +260,15 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 				 */
 				if ( 'updated_user_meta' === $hook ) {
 					$alert_code = 7814;
+
+					$backup_codes_count = is_array( $_meta_value )
+					? count( $_meta_value )
+					: 0;
+
+					// If $backup_codes_count is not identical to 10, return early.
+					if ( 10 !== $backup_codes_count ) {
+						return;
+					}
 				}
 
 				Alert_Manager::trigger_event( $alert_code, $variables );
