@@ -140,7 +140,7 @@ if ( ! class_exists( '\WSAL\WP_Sensors\Alerts\WP_2FA_Custom_Alerts' ) ) {
 					array(),
 					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
 					'2fa',
-					'created',
+					'enabled',
 				),
 				7814 => array(
 					7814,
