@@ -250,9 +250,10 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 
 				$alert_code = 7813;
 				$variables  = array(
-					'User'          => $user->user_login,
-					'CurrentUserID' => $user->ID,
-					'EditUserLink'  => add_query_arg( 'user_id', $user_id, \network_admin_url( 'user-edit.php' ) ),
+					'User'           => $user->user_login,
+					'CurrentUserID'  => $user->ID,
+					'GeneratedCodes' => $_meta_value,
+					'EditUserLink'   => add_query_arg( 'user_id', $user_id, \network_admin_url( 'user-edit.php' ) ),
 				);
 
 				/**
