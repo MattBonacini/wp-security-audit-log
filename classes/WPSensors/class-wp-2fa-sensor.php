@@ -250,7 +250,7 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 
 				$alert_code = 7813;
 				$variables  = array(
-					'user'          => $user->user_login,
+					'User'          => $user->user_login,
 					'CurrentUserID' => $user->ID,
 					'EditUserLink'  => add_query_arg( 'user_id', $user_id, \network_admin_url( 'user-edit.php' ) ),
 				);
@@ -367,10 +367,10 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 
 				$alert_code = 7815;
 				$variables  = array(
-					'user'          => $user->user_login,
+					'User'          => $user->user_login,
 					'CurrentUserID' => $user->ID,
-					//phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					'backup_code'   => $_REQUEST['wp-2fa-backup-code'],
+					//phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					'BackupCode'    => $_REQUEST['wp-2fa-backup-code'],
 					'EditUserLink'  => add_query_arg( 'user_id', $user->ID, network_admin_url( 'user-edit.php' ) ),
 				);
 
