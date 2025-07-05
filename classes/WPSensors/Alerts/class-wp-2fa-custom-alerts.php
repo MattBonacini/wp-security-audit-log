@@ -140,7 +140,7 @@ if ( ! class_exists( '\WSAL\WP_Sensors\Alerts\WP_2FA_Custom_Alerts' ) ) {
 					array(),
 					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
 					'2fa',
-					'added',
+					'created',
 				),
 				7814 => array(
 					7814,
@@ -151,6 +151,16 @@ if ( ! class_exists( '\WSAL\WP_Sensors\Alerts\WP_2FA_Custom_Alerts' ) ) {
 					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
 					'2fa',
 					'modified',
+				),
+				7815 => array(
+					7815,
+					WSAL_MEDIUM,
+					esc_html__( 'A WP 2FA User used a backup code to log in', 'wp-security-audit-log' ),
+					__( 'The user %user% has logged in with a backup code.', 'wp-security-audit-log' ),
+					array(),
+					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
+					'2fa',
+					'login',
 				),
 			);
 		}

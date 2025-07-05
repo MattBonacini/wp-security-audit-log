@@ -314,6 +314,9 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 				\add_action( 'updated_user_meta', array( __CLASS__, 'user_trigger' ), 10, 4 );
 				\add_action( 'added_user_meta', array( __CLASS__, 'user_trigger' ), 10, 4 );
 				\add_action( 'delete_user_meta', array( __CLASS__, 'user_deletions_trigger' ), 10, 4 );
+
+				\add_action( 'wp_2fa_user_authenticated', array( __CLASS__, 'login_actions_trigger' ), 10, 1 );
+
 			}
 		}
 
@@ -331,6 +334,35 @@ if ( ! class_exists( '\WSAL\WP_Sensors\WP_2FA_Sensor' ) ) {
 
 			if ( 'wp_2fa_enabled_methods' === $meta_key ) {
 				self::$old_user_meta['wp_2fa_enabled_methods'] = \get_user_meta( $user_id, 'wp_2fa_enabled_methods', true );
+			}
+		}
+
+		/**
+		 * Login actions triggered by the 2FA plugin right after a successful user login
+		 *
+		 * @param \WP_User $user - the logged in user.
+		 */
+		public static function login_actions_trigger( $user ) {
+
+			/**
+			 * User successfully logged in with a 2FA backup code
+			 */
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput.InputNotValidated,WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( 'backup_codes' === $_REQUEST['provider'] ) {
+
+				//phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( ! isset( $_REQUEST['wp-2fa-backup-code'] ) ) {
+					return;
+				}
+
+				$alert_code = 7815;
+				$variables  = array(
+					'user'          => $user->user_login,
+					'CurrentUserID' => $user->ID,
+					'EditUserLink'  => add_query_arg( 'user_id', $user->ID, network_admin_url( 'user-edit.php' ) ),
+				);
+
+				Alert_Manager::trigger_event( $alert_code, $variables );
 			}
 		}
 

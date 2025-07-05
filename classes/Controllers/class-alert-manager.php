@@ -863,6 +863,14 @@ if ( ! class_exists( '\WSAL\Controllers\Alert_Manager' ) ) {
 				}
 			}
 
+			// If we have the Current User ID let's try to get this user's role.
+			if ( ! isset( $event_data['CurrentUserRoles'] ) && isset( $event_data['CurrentUserID'] ) ) {
+				$user_roles = User_Helper::get_user_roles( $event_data['CurrentUserID'] );
+				if ( ! empty( $user_roles ) ) {
+					$event_data['CurrentUserRoles'] = $user_roles;
+				}
+			}
+
 			// Get event severity.
 			$alert_code = $alert_obj ? Constants::get_constant_code( $alert_obj['severity'] ) : -1;
 
