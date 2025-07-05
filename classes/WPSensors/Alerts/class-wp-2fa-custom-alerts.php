@@ -156,7 +156,7 @@ if ( ! class_exists( '\WSAL\WP_Sensors\Alerts\WP_2FA_Custom_Alerts' ) ) {
 					7815,
 					WSAL_MEDIUM,
 					esc_html__( 'A WP 2FA User used a backup code to log in', 'wp-security-audit-log' ),
-					__( 'The user %user% has logged in with a backup code.', 'wp-security-audit-log' ),
+					__( 'The user %User% has logged in with a backup code.', 'wp-security-audit-log' ),
 					array(),
 					Constants::wsaldefaults_build_links( array( 'EditUserLink' ) ),
 					'2fa',
